@@ -8,7 +8,12 @@ from passlib.context import CryptContext # pyright: ignore[reportMissingImports]
 # JWT CONFIGURATION
 # =========================
 
-SECRET_KEY = "change-this-secret-key-in-production"
+import os
+
+SECRET_KEY = os.getenv(
+    "SECRET_KEY",
+    "change-this-secret-key-in-production"
+)
 
 ALGORITHM = "HS256"
 
