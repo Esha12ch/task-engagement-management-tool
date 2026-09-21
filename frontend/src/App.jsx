@@ -1,5 +1,14 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+
+
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "";
+
+const api = axios.create({
+  baseURL: API_URL,
+});
 import {
   BrowserRouter,
   Routes,
@@ -23,8 +32,8 @@ function Login() {
     e.preventDefault();
 
     try {
-      const response = await axios.post(
-        "http://127.0.0.1:8001/auth/login",
+      const response = await api.post(
+        "/auth/login",
         {
           email: email,
           password: password,
@@ -42,8 +51,8 @@ function Login() {
 
       /* Get actual user information from backend */
 
-      const userResponse = await axios.get(
-        "http://127.0.0.1:8001/auth/me",
+      const userResponse = await api.get(
+        "/auth/me",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -219,8 +228,8 @@ function Dashboard() {
       }
 
       const response =
-        await axios.get(
-          "http://127.0.0.1:8001/dashboard/summary",
+        await api.get(
+          "/dashboard/summary",
           {
             headers: {
               Authorization:
@@ -714,8 +723,8 @@ function Tasks() {
 
 
       const response =
-        await axios.get(
-          "http://127.0.0.1:8001/tasks/",
+        await api.get(
+          "/tasks/",
           {
             headers,
           }
@@ -814,8 +823,8 @@ function Tasks() {
           );
 
        const response =
-  await axios.get(
-    "http://127.0.0.1:8001/users/team-members",
+  await api.get(
+    "/users/team-members",
     {
       headers: {
         Authorization:
@@ -909,8 +918,8 @@ function Tasks() {
           selectedStatuses[taskId];
 
 
-        await axios.put(
-          `http://127.0.0.1:8001/tasks/${taskId}/status`,
+        await api.put(
+          `/tasks/${taskId}/status`,
           {
             status: newStatus,
           },
@@ -981,9 +990,9 @@ function Tasks() {
         }
 
 
-        await axios.put(
+        await api.put(
 
-          `http://127.0.0.1:8001/tasks/${taskId}/assign`,
+          `/tasks/${taskId}/assign`,
 
           {
             assigned_to_id:
@@ -1271,9 +1280,9 @@ function Tasks() {
               "access_token"
             );
 
-          await axios.put(
+          await api.put(
 
-            `http://127.0.0.1:8001/tasks/${task.id}/deadline`,
+            `/tasks/${task.id}/deadline`,
 
             {
               due_date:
@@ -1627,18 +1636,18 @@ const [editStatus, setEditStatus] =
             servicesResponse
           ] = await Promise.all([
 
-            axios.get(
-              "http://127.0.0.1:8001/engagements/",
+            api.get(
+              "/engagements/",
               { headers }
             ),
 
-            axios.get(
-              "http://127.0.0.1:8001/clients/",
+            api.get(
+              "/clients/",
               { headers }
             ),
 
-            axios.get(
-              "http://127.0.0.1:8001/services/",
+            api.get(
+              "/services/",
               { headers }
             )
 
@@ -1739,9 +1748,9 @@ const [editStatus, setEditStatus] =
 
 
         const response =
-          await axios.post(
+          await api.post(
 
-            "http://127.0.0.1:8001/engagements/",
+            "/engagements/",
 
             {
               client_id:
@@ -1842,9 +1851,9 @@ const [editStatus, setEditStatus] =
       try {
 
         const response =
-          await axios.post(
+          await api.post(
 
-            `http://127.0.0.1:8001/engagements/${engagement.id}/generate-next`,
+            `/engagements/${engagement.id}/generate-next`,
 
             {},
 
@@ -1865,8 +1874,8 @@ const [editStatus, setEditStatus] =
 
 
         const result =
-          await axios.get(
-            "http://127.0.0.1:8001/engagements/",
+          await api.get(
+            "/engagements/",
             {
               headers: {
                 Authorization:
@@ -1918,8 +1927,8 @@ const updateEngagement = async (e) => {
 
   try {
 
-    const response = await axios.put(
-      `http://127.0.0.1:8001/engagements/${editingEngagement.id}`,
+    const response = await api.put(
+      `/engagements/${editingEngagement.id}`,
       {
         name: editName,
         period_start: editStart,
@@ -2674,8 +2683,8 @@ function Clients() {
             "access_token"
           );
 
-        await axios.post(
-          "http://127.0.0.1:8001/clients/",
+        await api.post(
+          "/clients/",
           {
             name: clientName,
             email: clientEmail,
@@ -2701,8 +2710,8 @@ function Clients() {
 
 
         const response =
-          await axios.get(
-            "http://127.0.0.1:8001/clients/",
+          await api.get(
+            "/clients/",
             {
               headers: {
                 Authorization:
@@ -2771,8 +2780,8 @@ const handleDeactivate = async (client) => {
     const token =
       localStorage.getItem("access_token");
 
-    await axios.delete(
-      `http://127.0.0.1:8001/clients/${client.id}`,
+    await api.delete(
+      `/clients/${client.id}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -2784,8 +2793,8 @@ const handleDeactivate = async (client) => {
       "Client deactivated successfully."
     );
 
-    const response = await axios.get(
-      "http://127.0.0.1:8001/clients/",
+    const response = await api.get(
+      "/clients/",
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -2826,8 +2835,8 @@ const handleDeactivate = async (client) => {
             "access_token"
           );
 
-        await axios.put(
-          `http://127.0.0.1:8001/clients/${editingClient.id}`,
+        await api.put(
+          `/clients/${editingClient.id}`,
           {
             name: editName,
             email: editEmail,
@@ -2849,8 +2858,8 @@ const handleDeactivate = async (client) => {
 
 
         const response =
-          await axios.get(
-            "http://127.0.0.1:8001/clients/",
+          await api.get(
+            "/clients/",
             {
               headers: {
                 Authorization:
@@ -2902,8 +2911,8 @@ const handleDeactivate = async (client) => {
           }
 
           const response =
-            await axios.get(
-              "http://127.0.0.1:8001/clients/",
+            await api.get(
+              "/clients/",
               {
                 headers: {
                   Authorization:
@@ -3442,11 +3451,15 @@ function Users() {
   const token =
     localStorage.getItem("access_token");
 
-  const axiosConfig = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
+  const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "";
+
+const axiosConfig = {
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+};
 
 
   // =========================
@@ -3460,8 +3473,8 @@ function Users() {
       setLoading(true);
 
       const response =
-        await axios.get(
-          "http://127.0.0.1:8001/users/",
+        await api.get(
+          "/users/",
           axiosConfig
         );
 
@@ -3563,8 +3576,8 @@ function Users() {
 
     try {
 
-      await axios.post(
-        "http://127.0.0.1:8001/users/",
+      await api.post(
+        "/users/",
         {
           name: name,
           email: email,
@@ -3630,8 +3643,8 @@ function Users() {
       }
 
 
-      await axios.put(
-        `http://127.0.0.1:8001/users/${editingUser.id}`,
+      await api.put(
+        `/users/${editingUser.id}`,
         updateData,
         axiosConfig
       );
@@ -3681,8 +3694,8 @@ function Users() {
 
     try {
 
-      await axios.delete(
-        `http://127.0.0.1:8001/users/${user.id}`,
+      await api.delete(
+        `/users/${user.id}`,
         axiosConfig
       );
 
@@ -3720,8 +3733,8 @@ function Users() {
 
     try {
 
-      await axios.put(
-        `http://127.0.0.1:8001/users/${user.id}/activate`,
+      await api.put(
+        `/users/${user.id}/activate`,
         {},
         axiosConfig
       );
@@ -4118,8 +4131,8 @@ function Services() {
 
   const loadServices = async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8001/services/",
+      const response = await api.get(
+        "/services/",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -4144,8 +4157,8 @@ function Services() {
 
     try {
       if (editingId) {
-        await axios.put(
-          `http://127.0.0.1:8001/services/${editingId}`,
+        await api.put(
+          `/services/${editingId}`,
           {
             name: form.name,
             description: form.description,
@@ -4160,8 +4173,8 @@ function Services() {
 
         setMessage("Service updated successfully.");
       } else {
-        await axios.post(
-          "http://127.0.0.1:8001/services/",
+        await api.post(
+          "/services/",
           {
             name: form.name,
             description: form.description,
@@ -4233,8 +4246,8 @@ function Services() {
     }
 
     try {
-      await axios.delete(
-        `http://127.0.0.1:8001/services/${id}`,
+      await api.delete(
+        `/services/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -4256,8 +4269,8 @@ function Services() {
 
   const handleActivate = async (service) => {
     try {
-      await axios.put(
-        `http://127.0.0.1:8001/services/${service.id}`,
+      await api.put(
+        `/services/${service.id}`,
         {
           name: service.name,
           description: service.description || "",
@@ -4539,8 +4552,8 @@ function Templates() {
 
   const loadTemplates = async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8001/templates/",
+      const response = await api.get(
+        "/templates/",
         {
           headers,
         }
@@ -4555,8 +4568,8 @@ function Templates() {
 
   const loadServices = async () => {
     try {
-      const response = await axios.get(
-        "http://127.0.0.1:8001/services/",
+      const response = await api.get(
+        "/services/",
         {
           headers,
         }
@@ -4588,8 +4601,8 @@ function Templates() {
 
     try {
       if (editingId) {
-        await axios.put(
-          `http://127.0.0.1:8001/templates/${editingId}`,
+        await api.put(
+          `/templates/${editingId}`,
           data,
           {
             headers,
@@ -4598,8 +4611,8 @@ function Templates() {
 
         setMessage("Task template updated successfully.");
       } else {
-        await axios.post(
-          "http://127.0.0.1:8001/templates/",
+        await api.post(
+          "/templates/",
           data,
           {
             headers,
@@ -4660,8 +4673,8 @@ function Templates() {
     }
 
     try {
-      await axios.delete(
-        `http://127.0.0.1:8001/templates/${id}`,
+      await api.delete(
+        `/templates/${id}`,
         {
           headers,
         }
@@ -4681,8 +4694,8 @@ function Templates() {
 
   const handleActivate = async (template) => {
     try {
-      await axios.put(
-        `http://127.0.0.1:8001/templates/${template.id}`,
+      await api.put(
+        `/templates/${template.id}`,
         {
           service_type_id: template.service_type_id,
           name: template.name,
