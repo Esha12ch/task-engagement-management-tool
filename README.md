@@ -116,34 +116,39 @@ All important authorization rules are enforced on the backend.
 
 The backend validates task status transitions.
 
-The supported workflow is:
+## Valid Transitions
+
+| Current Status | Allowed Next Status |
+|---|---|
+| `NOT_STARTED` | `IN_PROGRESS` |
+| `IN_PROGRESS` | `WAITING_FOR_CLIENT`, `READY_FOR_REVIEW` |
+| `WAITING_FOR_CLIENT` | `IN_PROGRESS` |
+| `READY_FOR_REVIEW` | `COMPLETED`, `CHANGES_REQUESTED` |
+| `CHANGES_REQUESTED` | `IN_PROGRESS` |
+| `COMPLETED` | No further transition |
+
+## Workflow Diagram
 
 ```text
 NOT_STARTED
-      |
-      v
+     |
+     v
 IN_PROGRESS
-      |
-      +-------------------------+
-      |                         |
-      v                         v
-WAITING_FOR_CLIENT       READY_FOR_REVIEW
-      |                         |
-      |                         +----------------+
-      |                         |                |
-      v                         v                v
-IN_PROGRESS             CHANGES_REQUESTED   COMPLETED
-                              |
-                              v
-                         IN_PROGRESS
+     |
+     +----------------------+
+     |                      |
+     v                      v
+WAITING_FOR_CLIENT    READY_FOR_REVIEW
+     |                      |
+     |                +-----+------+
+     |                |            |
+     v                v            v
+IN_PROGRESS    CHANGES_REQUESTED  COMPLETED
+                      |
+                      v
+                 IN_PROGRESS
 
-```
-
----
-
-# Project Structure
-
-```text
+Project Structure
 Task Management Assignment/
 │
 ├── backend/
@@ -186,13 +191,8 @@ Task Management Assignment/
 ├── README.md
 ├── technical-design-note.md
 └── ERD.png
-```
-
-# Backend Setup
-
-## 1. Open the backend directory
-
-```powershell
+Backend Setup
+1. Open the backend directory
 cd "C:\Users\Esha Chauhan\Downloads\Task Management Assignment\backend"
 2. Activate the virtual environment
 .\venv\Scripts\Activate.ps1
@@ -205,13 +205,11 @@ The backend will run at:
 
 http://127.0.0.1:8001
 
-# Frontend Setup
+Frontend Setup
 
 Open a second terminal.
 
-## 1. Open the frontend directory
-
-```powershell
+1. Open the frontend directory
 cd "C:\Users\Esha Chauhan\Downloads\Task Management Assignment\frontend"
 2. Install dependencies
 npm install
@@ -222,74 +220,76 @@ The frontend will run at:
 
 http://localhost:5173
 
-# API Documentation
+API Documentation
 
 FastAPI automatically provides Swagger API documentation.
 
-## Swagger UI
+Swagger UI
 
-`http://127.0.0.1:8001/docs`
+http://127.0.0.1:8001/docs
 
-## OpenAPI Specification
+OpenAPI Specification
 
-`http://127.0.0.1:8001/openapi.json`
+http://127.0.0.1:8001/openapi.json
 
-# Demo Credentials
+Demo Credentials
+Admin
+Email: admin@example.com
+Password: admin123
+Manager
+Email: manager1@example.com
+Password: manager123
+Team Member
+Email: member1@example.com
+Password: member123
 
-## Admin
+These credentials are intended for the local/demo environment.
 
-- Email: `admin@example.com`
-- Password: `admin123`
+Authentication
 
-## Manager
+The application uses JWT-based authentication.
 
-- Email: `manager1@example.com`
-- Password: `manager123`
+Login
+POST /auth/login
 
-## Team Member
+After successful authentication, the backend returns an access token.
 
-- Email: `member1@example.com`
-- Password: `member123`
+Protected API requests use:
 
-> These credentials are intended for the local/demo environment.
+Authorization: Bearer <access_token>
 
----
+The backend validates the JWT token and identifies the authenticated user and role.
 
-# Authorization
+Authorization
 
 Authorization is enforced on the backend rather than relying only on frontend controls.
 
 Examples:
 
-- Admin-only operations require the Admin role.
-- Managers can assign and reassign tasks.
-- Team Members can only update tasks assigned to themselves.
-- Team Members cannot update another Team Member's task.
-- Team Members cannot assign tasks.
-- Team Members cannot approve tasks.
-- Team Members cannot access audit history.
-- Inactive users cannot access protected resources.
-- Invalid task status transitions are rejected by the backend.
+Admin-only operations require the Admin role.
+Managers can assign and reassign tasks.
+Team Members can only update tasks assigned to themselves.
+Team Members cannot update another Team Member's task.
+Team Members cannot assign tasks.
+Team Members cannot approve tasks.
+Team Members cannot access audit history.
+Inactive users cannot access protected resources.
+Invalid task status transitions are rejected by the backend.
 
 All important authorization rules are enforced server-side.
 
----
-
-# Database Design
+Database Design
 
 The main entities in the application are:
 
-- `User`
-- `Client`
-- `ServiceType`
-- `TaskTemplate`
-- `Engagement`
-- `Task`
-- `AuditLog`
-
-## Main Relationships
-
-```text
+User
+Client
+ServiceType
+TaskTemplate
+Engagement
+Task
+AuditLog
+Main Relationships
 Client
    |
    └── Engagement
@@ -308,20 +308,22 @@ User
    |
    └── AuditLog
 
-# Engagement and Task Generation
+The database uses SQLAlchemy ORM with foreign-key relationships and constraints to maintain data integrity.
+
+A detailed database schema and ERD are provided in the Technical Design Note.
+
+Engagement and Task Generation
 
 When an engagement is created:
 
-1. The client is validated.
-2. The selected service type is validated.
-3. Active task templates for the selected service are loaded.
-4. The engagement is created.
-5. Tasks are automatically generated from the selected templates.
-6. Task due dates are calculated using the template configuration.
-7. The operation is handled within a database transaction.
-8. Duplicate engagements for the same client, service, and period are prevented.
-
----
+The client is validated.
+The selected service type is validated.
+Active task templates for the selected service are loaded.
+The engagement is created.
+Tasks are automatically generated from the selected templates.
+Task due dates are calculated using the template configuration.
+The operation is handled within a database transaction.
+Duplicate engagements for the same client, service, and period are prevented.
 Recurring Engagements
 
 Recurring services can generate the next period automatically.
@@ -583,4 +585,3 @@ Audit history
 Sample data
 Backend automated tests
 React frontend
-
