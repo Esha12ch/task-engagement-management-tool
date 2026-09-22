@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "";
+  "https://task-engagement-management-tool-m48w.onrender.com";
 
 const api = axios.create({
   baseURL: API_URL,
